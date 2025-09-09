@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>Gacha Quiz Game</h1>
+    <div class="container">
+        <h1>🎁 Gacha Quiz Game</h1>
         <div id="question-container">
-            <div id="question"></div>
+            <div id="question-text"></div>
             <div id="answers"></div>
         </div>
 
@@ -17,8 +17,11 @@
             <div id="case-strip"></div>
         </div>
 
-        <div id="reward-container"></div>
+        <button id="next-btn">Trả lời</button>
     </div>
+
+    <audio id="tick-sound" src="sounds/tick.mp3"></audio>
+    <audio id="win-sound" src="sounds/win.mp3"></audio>
 
     <script src="script.js"></script>
 </body>
