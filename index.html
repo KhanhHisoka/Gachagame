@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Gacha Quiz Machine</title>
+  <title>Gacha Quiz Machine - Trắc nghiệm</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,6 +55,17 @@
       border-radius: 10px;
       display: none;
     }
+    .option {
+      display: block;
+      margin: 8px auto;
+      padding: 8px 15px;
+      width: 200px;
+      border-radius: 8px;
+      background: #1e90ff;
+      color: white;
+      cursor: pointer;
+    }
+    .option:hover { background: #4682b4; }
     #customBox {
       margin-top: 30px;
       padding: 15px;
@@ -70,8 +81,8 @@
   </style>
 </head>
 <body>
-  <h1>🎰 Gacha Quiz Machine</h1>
-  <p>10 quả cầu = 10 câu hỏi. Bạn có thể tùy chỉnh bộ câu hỏi riêng!</p>
+  <h1>🎰 Gacha Quiz Machine (Trắc nghiệm)</h1>
+  <p>10 quả cầu = 10 câu hỏi. Chọn 1 trong 4 đáp án!</p>
 
   <div class="balls" id="ballContainer"></div>
 
@@ -81,35 +92,25 @@
   <div id="questionBox">
     <h3>Câu hỏi</h3>
     <p id="questionText"></p>
-    <input type="text" id="answerInput" placeholder="Nhập đáp án...">
-    <button onclick="checkAnswer()">Kiểm tra</button>
+    <div id="options"></div>
     <p id="result"></p>
-  </div>
-
-  <div id="customBox">
-    <h3>📝 Thêm câu hỏi riêng</h3>
-    <input type="text" id="newQ" placeholder="Câu hỏi">
-    <input type="text" id="newA" placeholder="Đáp án">
-    <button onclick="addQuestion()">Thêm</button>
-    <button onclick="clearQuestions()">Xoá hết</button>
-    <p id="customInfo"></p>
   </div>
 
   <script>
     let questions = [
-      {q: "Hành tinh lớn nhất trong Hệ Mặt Trời?", a: "Sao Mộc"},
-      {q: "Quốc gia có diện tích lớn nhất thế giới?", a: "Nga"},
-      {q: "Ai là người viết Truyện Kiều?", a: "Nguyễn Du"},
-      {q: "Ngôn ngữ lập trình phổ biến cho web?", a: "JavaScript"},
-      {q: "Thủ đô của Nhật Bản?", a: "Tokyo"},
-      {q: "Tác giả của Harry Potter?", a: "J.K. Rowling"},
-      {q: "Số nguyên tố nhỏ nhất?", a: "2"},
-      {q: "Năm có bao nhiêu ngày (không nhuận)?", a: "365"},
-      {q: "Màu lá cây thường thấy là gì?", a: "Xanh"},
-      {q: "Vịnh nổi tiếng ở Quảng Ninh, Việt Nam?", a: "Hạ Long"}
+      {q: "Hành tinh lớn nhất hệ Mặt Trời?", options: ["Trái Đất", "Sao Hoả", "Sao Mộc", "Sao Kim"], answer: 2},
+      {q: "Quốc gia có diện tích lớn nhất thế giới?", options: ["Mỹ", "Trung Quốc", "Nga", "Canada"], answer: 2},
+      {q: "Ai là tác giả Truyện Kiều?", options: ["Nguyễn Trãi", "Nguyễn Du", "Tố Hữu", "Hồ Xuân Hương"], answer: 1},
+      {q: "Ngôn ngữ lập trình phổ biến cho web?", options: ["Python", "JavaScript", "C++", "PHP"], answer: 1},
+      {q: "Thủ đô của Nhật Bản?", options: ["Kyoto", "Tokyo", "Osaka", "Nagoya"], answer: 1},
+      {q: "Tác giả của Harry Potter?", options: ["J.R.R. Tolkien", "J.K. Rowling", "George R.R. Martin", "Stephen King"], answer: 1},
+      {q: "Số nguyên tố nhỏ nhất?", options: ["1", "2", "3", "5"], answer: 1},
+      {q: "Một năm thường có bao nhiêu ngày?", options: ["364", "365", "366", "360"], answer: 1},
+      {q: "Màu sắc phổ biến của lá cây?", options: ["Đỏ", "Vàng", "Xanh", "Tím"], answer: 2},
+      {q: "Vịnh nổi tiếng ở Quảng Ninh?", options: ["Cam Ranh", "Hạ Long", "Vân Phong", "Xuân Đài"], answer: 1}
     ];
 
-    let remainingBalls = [], openedBalls = [], currentAnswer = "";
+    let remainingBalls = [], openedBalls = [], currentAnswer = -1;
 
     function initGame() {
       const container = document.getElementById("ballContainer");
@@ -124,8 +125,6 @@
         remainingBalls.push(i);
       }
       document.getElementById("questionBox").style.display = "none";
-      document.getElementById("customInfo").innerText =
-        `Hiện có ${questions.length} câu hỏi trong bộ gacha.`;
     }
 
     function spin() {
@@ -140,19 +139,32 @@
       const ball = container.children[ballNum - 1];
       ball.classList.add("opened");
 
+      showQuestion(ballNum - 1);
+    }
+
+    function showQuestion(idx) {
+      const q = questions[idx];
       document.getElementById("questionBox").style.display = "block";
-      document.getElementById("questionText").textContent = questions[ballNum - 1].q;
-      currentAnswer = questions[ballNum - 1].a.toLowerCase();
-      document.getElementById("answerInput").value = "";
+      document.getElementById("questionText").textContent = q.q;
+      currentAnswer = q.answer;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(i);
+        optionsDiv.appendChild(btn);
+      });
       document.getElementById("result").textContent = "";
     }
 
-    function checkAnswer() {
-      const userAns = document.getElementById("answerInput").value.trim().toLowerCase();
-      if (userAns === currentAnswer) {
+    function checkAnswer(choice) {
+      if (choice === currentAnswer) {
         document.getElementById("result").textContent = "✅ Chính xác!";
       } else {
-        document.getElementById("result").textContent = "❌ Sai. Đáp án đúng: " + currentAnswer;
+        document.getElementById("result").textContent =
+          "❌ Sai. Đáp án đúng là: " + questions.find(q => q.answer === currentAnswer).options[currentAnswer];
       }
     }
 
@@ -161,27 +173,7 @@
       alert("Game đã được reset!");
     }
 
-    function addQuestion() {
-      const q = document.getElementById("newQ").value.trim();
-      const a = document.getElementById("newA").value.trim();
-      if (!q || !a) {
-        alert("Vui lòng nhập đủ câu hỏi và đáp án!");
-        return;
-      }
-      questions.push({q, a});
-      document.getElementById("newQ").value = "";
-      document.getElementById("newA").value = "";
-      initGame();
-    }
-
-    function clearQuestions() {
-      if (confirm("Xoá hết câu hỏi và bắt đầu lại?")) {
-        questions = [];
-        initGame();
-      }
-    }
-
-    // Khởi tạo game lần đầu
+    // Khởi tạo lần đầu
     initGame();
   </script>
 </body>
