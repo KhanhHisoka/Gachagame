@@ -11,7 +11,6 @@ const questions = [
     { question: "Một vật có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của Trái Đất là F, nếu đưa vật đó lên độ cao bằng đúng bán kính R thì lực hấp dẫn sẽ bằng bao nhiêu?", answers: ["F", "1/2F", "1/3F", "1/4F"], correct: 3 }
 ];
 
-
 // =======================
 // BLOCK 2️⃣: Phần thưởng và độ hiếm
 // =======================
@@ -28,17 +27,12 @@ const rewardsList = [
     {name: "Vương Miện Rem", img: "rewards/crown.png", rarity: "Legend", color: "#ff0"}
 ];
 
-
 // =======================
-// BLOCK 3️⃣: Hàm chọn phần thưởng theo độ hiếm
+// BLOCK 3️⃣: Chọn phần thưởng theo độ hiếm
 // =======================
 function pickReward(difficultyLevel) {
-    let rarityChances = {Common: 0.6, Rare: 0.25, Epic: 0.12, Legend: 0.03};
-
-    // Câu cuối luôn trúng Legend
-    if(difficultyLevel >= 7){
-        rarityChances = {Common:0, Rare:0, Epic:0, Legend:1};
-    }
+    let rarityChances = {Common:0.6,Rare:0.25,Epic:0.12,Legend:0.03};
+    if(difficultyLevel >= 7) rarityChances = {Common:0,Rare:0,Epic:0,Legend:1};
 
     let rand = Math.random();
     let cumulative = 0;
@@ -50,22 +44,15 @@ function pickReward(difficultyLevel) {
             break;
         }
     }
-
     const pool = rewardsList.filter(r => r.rarity === selectedRarity);
     return pool[Math.floor(Math.random() * pool.length)];
 }
-
 
 // =======================
 // BLOCK 4️⃣: Băng chuyền + animation
 // =======================
 function showCaseAnimation(difficultyLevel){
     const caseStrip = document.getElementById("case-strip");
-    if(!caseStrip){
-        console.warn("⚠️ Thiếu phần tử HTML với id 'case-strip'");
-        return;
-    }
-
     caseStrip.innerHTML = "";
     const totalRewards = 20;
 
@@ -79,18 +66,43 @@ function showCaseAnimation(difficultyLevel){
         caseStrip.appendChild(img);
     }
 
-    caseStrip.style.transition = "left 5s cubic-bezier(0.25, 1, 0.5, 1)";
+    caseStrip.style.transition = "left 5s cubic-bezier(0.25,1,0.5,1)";
     caseStrip.style.left = "-50%";
 
-    setTimeout(() => {
+    setTimeout(()=>{
         caseStrip.style.transition = "none";
         caseStrip.style.left = "calc(50% - 60px)";
-
-        // Phát âm thanh chiến thắng
-        const win = new Audio("sounds/win.mp3");
-        win.play().catch(()=>console.warn("⚠️ Không tìm thấy sounds/win.mp3"));
-
-        // Thông báo
-        alert("Bạn nhận được phần thưởng!");
-    }, 5000);
+        document.getElementById("win-sound").play();
+        alert("🎉 Bạn nhận được phần thưởng!");
+    },5000);
 }
+
+// =======================
+// Quản lý câu hỏi
+// =======================
+let currentQ = 0;
+
+function showQuestion() {
+    const q = questions[currentQ];
+    document.getElementById("question-text").textContent = q.question;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = "";
+    q.answers.forEach((ans,i)=>{
+        const btn = document.createElement("button");
+        btn.textContent = ans;
+        btn.onclick = ()=>{
+            if(i === q.correct) {
+                showCaseAnimation(currentQ+1);
+            } else {
+                alert("Sai rồi! Thử lại.");
+            }
+        };
+        answersDiv.appendChild(btn);
+    });
+}
+
+document.getElementById("next-btn").addEventListener("click",()=>{
+    showQuestion();
+});
+
+showQuestion();
