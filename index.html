@@ -1,339 +1,188 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gacha Quiz Machine — HTML Only</title>
+  <meta charset="UTF-8">
+  <title>Gacha Quiz Machine</title>
   <style>
-    :root{
-      --bg:#0f172a;        /* slate-900 */
-      --panel:#111827;     /* gray-900 */
-      --glass: #1f2937cc;  /* gray-800 w/ alpha */
-      --accent:#a78bfa;    /* violet-400 */
-      --accent-2:#22d3ee;  /* cyan-400 */
-      --good:#22c55e;
-      --bad:#ef4444;
-      --text:#e5e7eb;      /* gray-200 */
-      --muted:#9ca3af;     /* gray-400 */
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 800px at 20% -10%, #1e293b, transparent),
-                  radial-gradient(1000px 600px at 120% 10%, #0ea5e9, transparent),
-                  radial-gradient(800px 600px at -20% 110%, #8b5cf6, transparent),
-                  var(--bg);
-      color:var(--text);
-      min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px;
+    h1 { margin-bottom: 10px; }
+    .balls {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      max-width: 400px;
+      margin: 20px auto;
     }
-    .app{ width:min(1100px, 100%); display:grid; grid-template-columns: 1.1fr .9fr; gap:28px; }
-    @media (max-width: 900px){ .app{ grid-template-columns: 1fr; } }
-
-    .card{ background:linear-gradient(180deg, #111827, #0b1220); border:1px solid #233146; border-radius:20px; box-shadow:var(--shadow); }
-    .pad{ padding:22px; }
-    .header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px}
-    .title{ font-weight:800; letter-spacing:.3px; font-size:clamp(20px, 3vw, 28px); }
-    .muted{ color:var(--muted); font-size:14px }
-
-    /* Gacha machine */
-    .machine{ position:relative; display:grid; place-items:center; padding:28px; }
-    .machine-body{ position:relative; width:min(520px, 100%); aspect-ratio: 1 / 1.15; border-radius: 28px; background:linear-gradient(180deg, #0b1220 0%, #0b1220 50%, #0a1020 100%);
-      border:1px solid #263247; box-shadow: var(--shadow); overflow:hidden; }
-    .machine-top{ position:absolute; inset:14px 14px auto 14px; height:55%; border-radius:22px; background:linear-gradient(180deg, #0e1b2f, #0c1729);
-      border:1px solid #2a3b57; display:grid; place-items:center; }
-    .glass{ width:90%; height:80%; border-radius:18px; background: radial-gradient(120px 60px at 20% 20%, #ffffff22, transparent),
-                                 radial-gradient(200px 120px at 90% 10%, #60a5fa11, transparent),
-                                 radial-gradient(500px 180px at 50% 110%, #ffffff0f, transparent),
-                                 #0b1220; border:1px solid #2d3e5d; overflow:hidden; position:relative; }
-
-    .balls{ position:absolute; inset:0; display:grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; gap:12px; padding:14px; }
-    .ball{ display:grid; place-items:center; border-radius:50%; font-weight:800; user-select:none; border:2px solid #1e293b; text-shadow:0 1px 0 rgba(0,0,0,.3); }
-    .ball span{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); }
-    .ball.hidden{ opacity:.25; filter:grayscale(1); }
-
-    .machine-bottom{ position:absolute; inset:auto 12px 12px 12px; height:33%; display:grid; grid-template-columns: 1fr 140px; gap:14px; }
-    .slot{ border-radius:16px; border:1px solid #2c3d5a; background:linear-gradient(180deg, #0f1a2b, #0b1322); padding:12px; display:grid; grid-template-rows:auto 1fr; }
-    .slot-window{ height:64px; border-radius:12px; border:1px dashed #334766; display:grid; place-items:center; color:#cbd5e1; letter-spacing:.6px; }
-
-    .lever{ border-radius:16px; border:1px solid #2c3d5a; background:linear-gradient(180deg, #0f1a2b, #0b1322); padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px }
-    .lever button{ all:unset; display:grid; place-items:center; padding:14px 18px; background:linear-gradient(180deg, #7c3aed, #2563eb); color:white; border-radius:14px; cursor:pointer; font-weight:800; letter-spacing:.4px; text-align:center; box-shadow:0 8px 20px rgba(37,99,235,.35); }
-    .lever button[disabled]{ opacity:.6; cursor:not-allowed; filter:grayscale(.2); }
-
-    .shake{ animation: shake 1.2s ease-in-out both; }
-    @keyframes shake{ 0%{ transform:translateX(0) } 20%{ transform:translateX(-6px) } 40%{ transform:translateX(6px) } 60%{ transform:translateX(-4px) } 80%{ transform:translateX(4px) } 100%{ transform:translateX(0) } }
-    .spin .ball{ animation: bob 1.2s ease-in-out infinite; }
-    @keyframes bob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(6px) } }
-
-    /* Right panel */
-    .panel{ display:grid; gap:16px }
-    .stat{ display:flex; align-items:center; justify-content:space-between; background: linear-gradient(180deg, #0e1728, #0a1120); border:1px solid #253554; border-radius:16px; padding:14px 16px }
-    .stat .v{ font-weight:800 }
-    .btn{ all:unset; padding:10px 14px; border-radius:10px; border:1px solid #2a3b57; cursor:pointer; font-weight:700; }
-    .btn:hover{ background:#111a2c }
-
-    /* Question modal */
-    dialog{ border:none; padding:0; width:min(680px, 94vw); background:transparent; }
-    .modal{ background:linear-gradient(180deg, #111827, #0b1220); border:1px solid #263247; border-radius:20px; padding:22px; box-shadow: var(--shadow); }
-    .q{ font-size:18px; line-height:1.5; margin:10px 0 8px }
-    .input-row{ display:flex; gap:10px; margin-top:8px }
-    input[type="text"]{ flex:1; padding:10px 12px; border-radius:10px; border:1px solid #2a3b57; background:#0a1324; color:var(--text); font-size:16px }
-    .actions{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap }
-    .pill{ padding:8px 12px; border-radius:999px; font-weight:700; border:1px solid #2a3b57; }
-    .ok{ background:#062413; border-color:#0f3c23; color:#86efac }
-    .bad{ background:#2a0e10; border-color:#3f1a1c; color:#fda4af }
-
-    /* Toast */
-    .toast{ position:fixed; inset:auto 16px 16px auto; background:#0b1322; border:1px solid #28405f; color:#dbeafe; padding:10px 14px; border-radius:12px; box-shadow:var(--shadow); opacity:0; transform: translateY(8px); transition:.3s }
-    .toast.show{ opacity:1; transform: translateY(0) }
-
-    /* Confetti */
-    .confetti{ pointer-events:none; position:fixed; inset:0; overflow:hidden }
-    .confetti i{ position:absolute; width:10px; height:14px; background:linear-gradient(180deg, var(--accent), var(--accent-2)); opacity:.9; animation: fall 1.6s linear forwards; border-radius:2px; }
-    @keyframes fall{ to{ transform: translateY(110vh) rotate(260deg); opacity:.6 } }
-
-    /* Helper */
-    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border-width:0; }
+    .ball {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #4e9, #269);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    .ball.opened {
+      background: gray;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #spinBtn { background: #6a5acd; color: white; }
+    #retryBtn { background: #ff6347; color: white; }
+    #questionBox {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      display: none;
+    }
+    #customBox {
+      margin-top: 30px;
+      padding: 15px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+    }
+    input {
+      margin: 5px;
+      padding: 6px;
+      border-radius: 6px;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Machine -->
-    <section class="card pad machine" aria-labelledby="machineTitle">
-      <div class="header" style="width:100%">
-        <div>
-          <h1 id="machineTitle" class="title">🎰 Gacha Quiz Machine</h1>
-          <div class="muted">10 quả cầu tương ứng 10 câu hỏi. Quay để mở ngẫu nhiên!</div>
-        </div>
-        <button id="resetBtn" class="btn" title="Đặt lại">Đặt lại</button>
-      </div>
-      <div id="machineBody" class="machine-body" aria-live="polite">
-        <div id="top" class="machine-top">
-          <div id="glass" class="glass">
-            <div id="balls" class="balls" aria-label="Các viên cầu"></div>
-          </div>
-        </div>
-        <div class="machine-bottom">
-          <div class="slot">
-            <div class="slot-window" id="slotText">Sẵn sàng quay</div>
-            <div class="pad muted" style="font-size:13px">Mẹo: Trả lời đúng để nhận pháo giấy 🎉</div>
-          </div>
-          <div class="lever">
-            <div aria-hidden="true">🔧</div>
-            <button id="spinBtn">QUAY</button>
-            <div class="muted" style="font-size:12px">Không lặp cho đến khi mở hết</div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <h1>🎰 Gacha Quiz Machine</h1>
+  <p>10 quả cầu = 10 câu hỏi. Bạn có thể tùy chỉnh bộ câu hỏi riêng!</p>
 
-    <!-- Right panel -->
-    <aside class="panel">
-      <div class="card pad">
-        <div class="header"><div class="title" style="font-size:20px">📊 Trạng thái</div></div>
-        <div class="stat"><div>Điểm</div><div class="v" id="score">0</div></div>
-        <div class="stat"><div>Đã mở</div><div class="v" id="opened">0 / 10</div></div>
-        <div class="stat"><div>Chuỗi đúng</div><div class="v" id="streak">0🔥</div></div>
-        <div class="stat"><div>Còn lại</div><div class="v" id="left">10</div></div>
-      </div>
+  <div class="balls" id="ballContainer"></div>
 
-      <div class="card pad">
-        <div class="header"><div class="title" style="font-size:20px">📝 Lịch sử câu hỏi</div></div>
-        <ol id="history" class="muted" style="margin:0; padding-left:20px; display:grid; gap:8px; max-height:320px; overflow:auto"></ol>
-      </div>
-    </aside>
+  <button id="spinBtn" onclick="spin()">Quay</button>
+  <button id="retryBtn" onclick="resetGame()">🔄 Thử lại</button>
+
+  <div id="questionBox">
+    <h3>Câu hỏi</h3>
+    <p id="questionText"></p>
+    <input type="text" id="answerInput" placeholder="Nhập đáp án...">
+    <button onclick="checkAnswer()">Kiểm tra</button>
+    <p id="result"></p>
   </div>
 
-  <!-- Question modal -->
-  <dialog id="qModal">
-    <div class="modal" role="dialog" aria-labelledby="qTitle">
-      <div class="header">
-        <div class="title" id="qTitle" style="font-size:20px">Câu hỏi</div>
-        <span class="pill" id="capsuleTag">#?</span>
-      </div>
-      <div class="q" id="questionText">...</div>
-      <div class="input-row">
-        <label class="sr-only" for="answer">Câu trả lời</label>
-        <input id="answer" type="text" placeholder="Nhập đáp án..." autocomplete="off" />
-        <button class="btn" id="checkBtn">Kiểm tra</button>
-      </div>
-      <div class="actions">
-        <span id="feedback" class="pill muted">&nbsp;</span>
-        <button class="btn" id="revealBtn">Gợi ý/Đáp án</button>
-        <button class="btn" id="closeBtn">Đóng</button>
-      </div>
-    </div>
-  </dialog>
-
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <div id="confetti" class="confetti" aria-hidden="true"></div>
+  <div id="customBox">
+    <h3>📝 Thêm câu hỏi riêng</h3>
+    <input type="text" id="newQ" placeholder="Câu hỏi">
+    <input type="text" id="newA" placeholder="Đáp án">
+    <button onclick="addQuestion()">Thêm</button>
+    <button onclick="clearQuestions()">Xoá hết</button>
+    <p id="customInfo"></p>
+  </div>
 
   <script>
-    // --- Data --------------------------------------------------------------
-    const QUESTIONS = [
-      { q: "Thủ đô của Pháp là gì?", a: ["paris"] },
-      { q: "5 + 7 = ?", a: ["12"] },
-      { q: "Ai là tác giả 'Romeo and Juliet'?", a: ["shakespeare", "william shakespeare"] },
-      { q: "Hành tinh lớn nhất hệ Mặt Trời?", a: ["jupiter", "mộc tinh"] },
-      { q: "Kí hiệu hóa học của nước?", a: ["h2o"] },
-      { q: "Ai vẽ Mona Lisa?", a: ["leonardo da vinci", "da vinci"] },
-      { q: "Thế chiến II kết thúc năm nào?", a: ["1945"] },
-      { q: "Căn bậc hai của 81?", a: ["9", "chín"] },
-      { q: "Sa mạc Sahara thuộc châu lục nào?", a: ["africa", "châu phi", "phi"] },
-      { q: "Khí nào con người cần để hít thở?", a: ["oxygen", "oxi", "oxygen gas", "o2"] },
+    let questions = [
+      {q: "Hành tinh lớn nhất trong Hệ Mặt Trời?", a: "Sao Mộc"},
+      {q: "Quốc gia có diện tích lớn nhất thế giới?", a: "Nga"},
+      {q: "Ai là người viết Truyện Kiều?", a: "Nguyễn Du"},
+      {q: "Ngôn ngữ lập trình phổ biến cho web?", a: "JavaScript"},
+      {q: "Thủ đô của Nhật Bản?", a: "Tokyo"},
+      {q: "Tác giả của Harry Potter?", a: "J.K. Rowling"},
+      {q: "Số nguyên tố nhỏ nhất?", a: "2"},
+      {q: "Năm có bao nhiêu ngày (không nhuận)?", a: "365"},
+      {q: "Màu lá cây thường thấy là gì?", a: "Xanh"},
+      {q: "Vịnh nổi tiếng ở Quảng Ninh, Việt Nam?", a: "Hạ Long"}
     ];
 
-    // Distinct nice colors for 10 balls
-    const COLORS = ["#60a5fa", "#f472b6", "#34d399", "#f59e0b", "#a78bfa", "#22d3ee", "#fb7185", "#4ade80", "#fbbf24", "#c084fc"];
+    let remainingBalls = [], openedBalls = [], currentAnswer = "";
 
-    // --- State -------------------------------------------------------------
-    let remaining = Array.from({length: 10}, (_, i) => i);
-    let opened = new Set();
-    let score = 0; let streak = 0;
-    let spinning = false; let currentIndex = null;
-
-    // --- Elements ----------------------------------------------------------
-    const ballsWrap = document.getElementById('balls');
-    const machineBody = document.getElementById('machineBody');
-    const slotText = document.getElementById('slotText');
-    const spinBtn = document.getElementById('spinBtn');
-    const resetBtn = document.getElementById('resetBtn');
-
-    const scoreEl = document.getElementById('score');
-    const openedEl = document.getElementById('opened');
-    const leftEl = document.getElementById('left');
-    const streakEl = document.getElementById('streak');
-    const histEl = document.getElementById('history');
-
-    const modal = document.getElementById('qModal');
-    const qText = document.getElementById('questionText');
-    const capsuleTag = document.getElementById('capsuleTag');
-    const answerInput = document.getElementById('answer');
-    const checkBtn = document.getElementById('checkBtn');
-    const revealBtn = document.getElementById('revealBtn');
-    const closeBtn = document.getElementById('closeBtn');
-    const feedback = document.getElementById('feedback');
-
-    const toast = document.getElementById('toast');
-    const confetti = document.getElementById('confetti');
-
-    // --- Helpers -----------------------------------------------------------
-    const norm = s => (s || "").toString().trim().toLowerCase().replace(/\s+/g,' ');
-
-    function updateStats(){
-      scoreEl.textContent = score;
-      openedEl.textContent = `${opened.size} / 10`;
-      leftEl.textContent = `${remaining.length}`;
-      streakEl.textContent = `${streak}🔥`;
-    }
-
-    function pushHistory(text, ok){
-      const li = document.createElement('li');
-      li.textContent = text; li.style.color = ok ? '#86efac' : '#fca5a5';
-      histEl.prepend(li);
-    }
-
-    function showToast(msg){
-      toast.textContent = msg; toast.classList.add('show');
-      clearTimeout(showToast._t); showToast._t = setTimeout(()=>toast.classList.remove('show'), 1600);
-    }
-
-    function boomConfetti(){
-      for(let i=0;i<80;i++){
-        const piece = document.createElement('i');
-        const x = Math.random()*100; const delay = Math.random()*0.6; const scale = 0.7 + Math.random()*0.8;
-        piece.style.left = `${x}vw`; piece.style.top = '-5vh'; piece.style.animationDelay = `${delay}s`;
-        piece.style.transform = `scale(${scale})`;
-        confetti.appendChild(piece); setTimeout(()=>piece.remove(), 1800);
+    function initGame() {
+      const container = document.getElementById("ballContainer");
+      container.innerHTML = "";
+      remainingBalls = [];
+      openedBalls = [];
+      for (let i = 1; i <= questions.length; i++) {
+        const ball = document.createElement("div");
+        ball.className = "ball";
+        ball.textContent = i;
+        container.appendChild(ball);
+        remainingBalls.push(i);
       }
+      document.getElementById("questionBox").style.display = "none";
+      document.getElementById("customInfo").innerText =
+        `Hiện có ${questions.length} câu hỏi trong bộ gacha.`;
     }
 
-    function renderBalls(){
-      ballsWrap.innerHTML = '';
-      for(let i=0;i<10;i++){
-        const d = document.createElement('div');
-        d.className = 'ball';
-        d.style.background = `radial-gradient(circle at 30% 25%, #ffffffaa, transparent 35%), ${COLORS[i]}`;
-        d.style.aspectRatio = '1 / 1';
-        d.style.width = '100%';
-        if(opened.has(i)) d.classList.add('hidden');
-        const s = document.createElement('span'); s.textContent = i+1; d.appendChild(s);
-        ballsWrap.appendChild(d);
+    function spin() {
+      if (remainingBalls.length === 0) {
+        alert("Đã mở hết câu hỏi! Bấm 'Thử lại' để chơi lại.");
+        return;
       }
+      const index = Math.floor(Math.random() * remainingBalls.length);
+      const ballNum = remainingBalls.splice(index, 1)[0];
+      openedBalls.push(ballNum);
+      const container = document.getElementById("ballContainer");
+      const ball = container.children[ballNum - 1];
+      ball.classList.add("opened");
+
+      document.getElementById("questionBox").style.display = "block";
+      document.getElementById("questionText").textContent = questions[ballNum - 1].q;
+      currentAnswer = questions[ballNum - 1].a.toLowerCase();
+      document.getElementById("answerInput").value = "";
+      document.getElementById("result").textContent = "";
     }
 
-    function pickRandom(){
-      const idx = Math.floor(Math.random()*remaining.length);
-      return remaining[idx];
-    }
-
-    function openQuestion(index){
-      currentIndex = index;
-      const item = QUESTIONS[index];
-      qText.textContent = item.q; capsuleTag.textContent = `#${index+1}`;
-      answerInput.value = ''; feedback.textContent=''; feedback.className='pill muted';
-      modal.showModal(); setTimeout(()=>answerInput.focus(), 10);
-    }
-
-    function markOpened(index){
-      opened.add(index);
-      remaining = remaining.filter(i=>i!==index);
-      renderBalls(); updateStats();
-    }
-
-    function spin(){
-      if(spinning) return; if(remaining.length===0){ showToast('Đã mở hết! Nhấn Đặt lại.'); return; }
-      spinning = true; spinBtn.disabled = true; slotText.textContent = 'Đang quay...';
-      machineBody.classList.add('shake'); document.getElementById('glass').classList.add('spin');
-      const choice = pickRandom();
-      setTimeout(()=>{
-        machineBody.classList.remove('shake'); document.getElementById('glass').classList.remove('spin');
-        slotText.textContent = `Mở viên #${choice+1}`;
-        markOpened(choice);
-        openQuestion(choice);
-        spinning = false; spinBtn.disabled = false;
-      }, 1200);
-    }
-
-    function resetAll(){
-      remaining = Array.from({length: 10}, (_, i) => i); opened.clear();
-      score = 0; streak = 0; currentIndex = null; renderBalls(); updateStats();
-      histEl.innerHTML=''; slotText.textContent = 'Sẵn sàng quay'; showToast('Đã đặt lại');
-    }
-
-    // --- Events ------------------------------------------------------------
-    spinBtn.addEventListener('click', spin);
-    resetBtn.addEventListener('click', resetAll);
-
-    checkBtn.addEventListener('click', ()=>{
-      const ans = norm(answerInput.value);
-      const corrects = QUESTIONS[currentIndex].a.map(norm);
-      const ok = corrects.includes(ans);
-      if(ok){
-        score += 10; streak += 1; updateStats();
-        feedback.textContent = '✓ Chính xác! +10 điểm'; feedback.className='pill ok';
-        boomConfetti(); pushHistory(`[#${currentIndex+1}] ${QUESTIONS[currentIndex].q} — ✅`, true);
+    function checkAnswer() {
+      const userAns = document.getElementById("answerInput").value.trim().toLowerCase();
+      if (userAns === currentAnswer) {
+        document.getElementById("result").textContent = "✅ Chính xác!";
       } else {
-        streak = 0; updateStats();
-        feedback.textContent = '✗ Chưa đúng, thử lại!'; feedback.className='pill bad';
-        pushHistory(`[#${currentIndex+1}] ${QUESTIONS[currentIndex].q} — ❌`, false);
+        document.getElementById("result").textContent = "❌ Sai. Đáp án đúng: " + currentAnswer;
       }
-    });
+    }
 
-    revealBtn.addEventListener('click', ()=>{
-      const ans = QUESTIONS[currentIndex].a[0];
-      showToast(`Đáp án: ${ans}`);
-    });
+    function resetGame() {
+      initGame();
+      alert("Game đã được reset!");
+    }
 
-    closeBtn.addEventListener('click', ()=>{
-      modal.close();
-      if(remaining.length===0){ slotText.textContent = 'Đã mở hết! 🎉'; }
-    });
+    function addQuestion() {
+      const q = document.getElementById("newQ").value.trim();
+      const a = document.getElementById("newA").value.trim();
+      if (!q || !a) {
+        alert("Vui lòng nhập đủ câu hỏi và đáp án!");
+        return;
+      }
+      questions.push({q, a});
+      document.getElementById("newQ").value = "";
+      document.getElementById("newA").value = "";
+      initGame();
+    }
 
-    answerInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') checkBtn.click(); });
+    function clearQuestions() {
+      if (confirm("Xoá hết câu hỏi và bắt đầu lại?")) {
+        questions = [];
+        initGame();
+      }
+    }
 
-    // --- Init --------------------------------------------------------------
-    renderBalls(); updateStats();
+    // Khởi tạo game lần đầu
+    initGame();
   </script>
 </body>
 </html>
