@@ -1,0 +1,52 @@
+function showReward(idx) {
+  const overlay = document.createElement("div");
+  overlay.style.position = "fixed";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.background = "rgba(0,0,0,0.9)";
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.zIndex = 9999;
+
+  const carousel = document.createElement("div");
+  carousel.style.display = "flex";
+  carousel.style.gap = "10px";
+  carousel.style.animation = "slide 4s linear forwards";
+
+  // tạo 20 ảnh giả, trong đó có 1 ảnh trúng thưởng
+  for (let i = 0; i < 20; i++) {
+    const img = document.createElement("img");
+    img.src = (i === 14) 
+      ? `rewards/reward${idx + 1}.png`   // ảnh thật
+      : `rewards/reward${Math.floor(Math.random() * 10) + 1}.png`; // ảnh random
+    img.style.width = "100px";
+    img.style.borderRadius = "8px";
+    carousel.appendChild(img);
+  }
+
+  overlay.appendChild(carousel);
+  document.body.appendChild(overlay);
+
+  // CSS animation keyframes
+  const style = document.createElement("style");
+  style.innerHTML = `
+    @keyframes slide {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-1400px); } /* dịch băng chuyền */
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Sau 4s thì hiện nút đóng
+  setTimeout(() => {
+    const btn = document.createElement("button");
+    btn.textContent = "Đóng";
+    btn.style.marginTop = "20px";
+    btn.style.padding = "10px 20px";
+    btn.onclick = () => overlay.remove();
+    overlay.appendChild(btn);
+  }, 4000);
+}
