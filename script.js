@@ -56,8 +56,10 @@ function showCaseAnimation(difficultyLevel){
     caseStrip.innerHTML = "";
     const totalRewards = 20;
 
+    let winningReward = pickReward(difficultyLevel);
+
     for(let i=0;i<totalRewards;i++){
-        const r = pickReward(difficultyLevel);
+        let r = (i === Math.floor(totalRewards/2)) ? winningReward : pickReward(difficultyLevel);
         const img = document.createElement("img");
         img.src = r.img;
         img.classList.add("reward");
@@ -73,36 +75,19 @@ function showCaseAnimation(difficultyLevel){
         caseStrip.style.transition = "none";
         caseStrip.style.left = "calc(50% - 60px)";
         document.getElementById("win-sound").play();
-        alert("🎉 Bạn nhận được phần thưởng!");
+
+        // Hiển thị popup rực rỡ
+        const popup = document.getElementById("reward-popup");
+        popup.innerHTML = `🎉 Chúc mừng! Bạn nhận được <b>${winningReward.name} (${winningReward.rarity})</b> 🎁✨`;
+        popup.style.display = "block";
+
+        // Ẩn sau 3s
+        setTimeout(()=>{ popup.style.display="none"; }, 3000);
     },5000);
 }
-
-// =======================
-// Quản lý câu hỏi
-// =======================
-let currentQ = 0;
-
-function showQuestion() {
-    const q = questions[currentQ];
-    document.getElementById("question-text").textContent = q.question;
-    const answersDiv = document.getElementById("answers");
-    answersDiv.innerHTML = "";
-    q.answers.forEach((ans,i)=>{
-        const btn = document.createElement("button");
-        btn.textContent = ans;
-        btn.onclick = ()=>{
-            if(i === q.correct) {
-                showCaseAnimation(currentQ+1);
-            } else {
-                alert("Sai rồi! Thử lại.");
-            }
-        };
-        answersDiv.appendChild(btn);
-    });
-}
-
 document.getElementById("next-btn").addEventListener("click",()=>{
     showQuestion();
 });
 
 showQuestion();
+
