@@ -98,16 +98,46 @@
 
   <script>
     let questions = [
-      {q: "Hành tinh lớn nhất hệ Mặt Trời?", options: ["Trái Đất", "Sao Hoả", "Sao Mộc", "Sao Kim"], answer: 2},
-      {q: "Quốc gia có diện tích lớn nhất thế giới?", options: ["Mỹ", "Trung Quốc", "Nga", "Canada"], answer: 2},
-      {q: "Ai là tác giả Truyện Kiều?", options: ["Nguyễn Trãi", "Nguyễn Du", "Tố Hữu", "Hồ Xuân Hương"], answer: 1},
-      {q: "Ngôn ngữ lập trình phổ biến cho web?", options: ["Python", "JavaScript", "C++", "PHP"], answer: 1},
-      {q: "Thủ đô của Nhật Bản?", options: ["Kyoto", "Tokyo", "Osaka", "Nagoya"], answer: 1},
-      {q: "Tác giả của Harry Potter?", options: ["J.R.R. Tolkien", "J.K. Rowling", "George R.R. Martin", "Stephen King"], answer: 1},
-      {q: "Số nguyên tố nhỏ nhất?", options: ["1", "2", "3", "5"], answer: 1},
-      {q: "Một năm thường có bao nhiêu ngày?", options: ["364", "365", "366", "360"], answer: 1},
-      {q: "Màu sắc phổ biến của lá cây?", options: ["Đỏ", "Vàng", "Xanh", "Tím"], answer: 2},
-      {q: "Vịnh nổi tiếng ở Quảng Ninh?", options: ["Cam Ranh", "Hạ Long", "Vân Phong", "Xuân Đài"], answer: 1}
+      {q: "Lực Hấp dẫn tồn tại giữa:", options: ["Trái Đất và quả táo", "Mặt Trăng và Trái Đất", "Hai học sinh trong lớp", "Tất cả trường hợp trên"], answer: 4},
+      {q: "Trọng lực là gì?", options: ["Lực ép của vật lên mặt đất", "Lực hút Trái Đất tác dụng lên vật", "Lực hút giữa Trái Đất và Mặt Trăng", "Lực hút của mọi vật tác dụng lên Trái Đất"], answer: 2},
+      {q: "Nếu khối lượng một vật tăng gấp đôi thì lực hấp dẫn giữa nó và Trái Đất", options: ["Không đổi", "Tăng 2 lần", "Giảm 2 lần", "Tăng 4 lần"], answer: 2},
+      {q: "Nếu khoảng cách giữa hai vật tăng gấp 3, thì lực hấp dẫn:", options: ["Giảm 3 lần", "Không giảm", "Giảm 6 lần", "Giảm 9 lần"], answer: 4},
+      {q: "Định luật vạn vật hấp dẫn giúp ta:", options: ["Giải thích quỹ đạo hành tinh", "phóng vệ tinh nhân tạo", "Hiểu hiện tượng thủy triều", "Tất cả đều đúng"], answer: 4},
+      {q: "Đại lượng nào sau đây không ảnh hưởng đến lực hấp dẫn giữa hai vật?", options: ["Khối lượng vật thứ nhất", "Khối lượng vật thứ hai", "Khoảng cách giữa hai vật", "Vật tốc chuyển động của hai vật"], answer: 4},
+      {q: "Một vật có khối lượng có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của trái    }
+    input {
+      margin: 5px;
+      padding: 6px;
+      border-radius: 6px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎰 Gacha Quiz Machine (Trắc nghiệm)</h1>
+  <p>10 quả cầu = 10 câu hỏi. Chọn 1 trong 4 đáp án!</p>
+
+  <div class="balls" id="ballContainer"></div>
+
+  <button id="spinBtn" onclick="spin()">Quay</button>
+  <button id="retryBtn" onclick="resetGame()">🔄 Thử lại</button>
+
+  <div id="questionBox">
+    <h3>Câu hỏi</h3>
+    <p id="questionText"></p>
+    <div id="options"></div>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    let questions = [
+      {q: "Lực Hấp dẫn tồn tại giữa:", options: ["Trái Đất và quả táo", "Mặt Trăng và Trái Đất", "Hai học sinh trong lớp", "Tất cả trường hợp trên"], answer: 4},
+      {q: "Trọng lực là gì?", options: ["Lực ép của vật lên mặt đất", "Lực hút Trái Đất tác dụng lên vật", "Lực hút giữa Trái Đất và Mặt Trăng", "Lực hút của mọi vật tác dụng lên Trái Đất"], answer: 2},
+      {q: "Nếu khối lượng một vật tăng gấp đôi thì lực hấp dẫn giữa nó và Trái Đất", options: ["Không đổi", "Tăng 2 lần", "Giảm 2 lần", "Tăng 4 lần"], answer: 2},
+      {q: "Nếu khoảng cách giữa hai vật tăng gấp 3, thì lực hấp dẫn:", options: ["Giảm 3 lần", "Không giảm", "Giảm 6 lần", "Giảm 9 lần"], answer: 4},
+      {q: "Định luật vạn vật hấp dẫn giúp ta:", options: ["Giải thích quỹ đạo hành tinh", "phóng vệ tinh nhân tạo", "Hiểu hiện tượng thủy triều", "Tất cả đều đúng"], answer: 4},
+      {q: "Đại lượng nào sau đây không ảnh hưởng đến lực hấp dẫn giữa hai vật?", options: ["Khối lượng vật thứ nhất", "Khối lượng vật thứ hai", "Khoảng cách giữa hai vật", "Vật tốc chuyển động của hai vật"], answer: 4},
+      {q: "Một vật có khối lượng có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của Trái Đất là F, nếu đưa vật đó lên độ cao bằng đúng bán kính R thì lực hấp dẫn sẽ bằng bao nhiêu?", options: ["F", "1/2F", "1/3F", "1/4F"], answer: 4},
     ];
 
     let remainingBalls = [], openedBalls = [], currentAnswer = -1;
@@ -178,3 +208,4 @@
   </script>
 </body>
 </html>
+
