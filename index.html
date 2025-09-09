@@ -1,3 +1,17 @@
+👍 Mình thấy bạn đã ghép code lại, nhưng có một số lỗi nhỏ khiến game chưa chạy đúng:
+
+1. Trong `questions`, bạn để `answer: 4` (nhưng JS mảng bắt đầu từ 0).
+
+   * Nếu đáp án là lựa chọn số 4 thì `answer` phải là `3`.
+   * Ví dụ: `"Tất cả trường hợp trên"` nằm ở vị trí cuối → `answer: 3`.
+
+2. Đoạn code bị lặp `<style>` và `<body>` một lần (do copy dở). Mình đã gom lại cho gọn.
+
+---
+
+## ✅ Bản sửa hoàn chỉnh của bạn
+
+```html
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -59,63 +73,18 @@
       display: block;
       margin: 8px auto;
       padding: 8px 15px;
-      width: 200px;
+      width: 250px;
       border-radius: 8px;
       background: #1e90ff;
       color: white;
       cursor: pointer;
     }
     .option:hover { background: #4682b4; }
-    #customBox {
-      margin-top: 30px;
-      padding: 15px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 10px;
-    }
-    input {
-      margin: 5px;
-      padding: 6px;
-      border-radius: 6px;
-      border: none;
-    }
   </style>
 </head>
 <body>
   <h1>🎰 Gacha Quiz Machine (Trắc nghiệm)</h1>
-  <p>10 quả cầu = 10 câu hỏi. Chọn 1 trong 4 đáp án!</p>
-
-  <div class="balls" id="ballContainer"></div>
-
-  <button id="spinBtn" onclick="spin()">Quay</button>
-  <button id="retryBtn" onclick="resetGame()">🔄 Thử lại</button>
-
-  <div id="questionBox">
-    <h3>Câu hỏi</h3>
-    <p id="questionText"></p>
-    <div id="options"></div>
-    <p id="result"></p>
-  </div>
-
-  <script>
-    let questions = [
-      {q: "Lực Hấp dẫn tồn tại giữa:", options: ["Trái Đất và quả táo", "Mặt Trăng và Trái Đất", "Hai học sinh trong lớp", "Tất cả trường hợp trên"], answer: 4},
-      {q: "Trọng lực là gì?", options: ["Lực ép của vật lên mặt đất", "Lực hút Trái Đất tác dụng lên vật", "Lực hút giữa Trái Đất và Mặt Trăng", "Lực hút của mọi vật tác dụng lên Trái Đất"], answer: 2},
-      {q: "Nếu khối lượng một vật tăng gấp đôi thì lực hấp dẫn giữa nó và Trái Đất", options: ["Không đổi", "Tăng 2 lần", "Giảm 2 lần", "Tăng 4 lần"], answer: 2},
-      {q: "Nếu khoảng cách giữa hai vật tăng gấp 3, thì lực hấp dẫn:", options: ["Giảm 3 lần", "Không giảm", "Giảm 6 lần", "Giảm 9 lần"], answer: 4},
-      {q: "Định luật vạn vật hấp dẫn giúp ta:", options: ["Giải thích quỹ đạo hành tinh", "phóng vệ tinh nhân tạo", "Hiểu hiện tượng thủy triều", "Tất cả đều đúng"], answer: 4},
-      {q: "Đại lượng nào sau đây không ảnh hưởng đến lực hấp dẫn giữa hai vật?", options: ["Khối lượng vật thứ nhất", "Khối lượng vật thứ hai", "Khoảng cách giữa hai vật", "Vật tốc chuyển động của hai vật"], answer: 4},
-      {q: "Một vật có khối lượng có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của trái    }
-    input {
-      margin: 5px;
-      padding: 6px;
-      border-radius: 6px;
-      border: none;
-    }
-  </style>
-</head>
-<body>
-  <h1>🎰 Gacha Quiz Machine (Trắc nghiệm)</h1>
-  <p>10 quả cầu = 10 câu hỏi. Chọn 1 trong 4 đáp án!</p>
+  <p>7 quả cầu = 7 câu hỏi Vật lý. Chọn 1 trong 4 đáp án!</p>
 
   <div class="balls" id="ballContainer"></div>
 
@@ -135,12 +104,12 @@
       {q: "Trọng lực là gì?", options: ["Lực ép của vật lên mặt đất", "Lực hút Trái Đất tác dụng lên vật", "Lực hút giữa Trái Đất và Mặt Trăng", "Lực hút của mọi vật tác dụng lên Trái Đất"], answer: 1},
       {q: "Nếu khối lượng một vật tăng gấp đôi thì lực hấp dẫn giữa nó và Trái Đất", options: ["Không đổi", "Tăng 2 lần", "Giảm 2 lần", "Tăng 4 lần"], answer: 1},
       {q: "Nếu khoảng cách giữa hai vật tăng gấp 3, thì lực hấp dẫn:", options: ["Giảm 3 lần", "Không giảm", "Giảm 6 lần", "Giảm 9 lần"], answer: 3},
-      {q: "Định luật vạn vật hấp dẫn giúp ta:", options: ["Giải thích quỹ đạo hành tinh", "phóng vệ tinh nhân tạo", "Hiểu hiện tượng thủy triều", "Tất cả đều đúng"], answer: 3},
-      {q: "Đại lượng nào sau đây không ảnh hưởng đến lực hấp dẫn giữa hai vật?", options: ["Khối lượng vật thứ nhất", "Khối lượng vật thứ hai", "Khoảng cách giữa hai vật", "Vật tốc chuyển động của hai vật"], answer: 3},
-      {q: "Một vật có khối lượng có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của Trái Đất là F, nếu đưa vật đó lên độ cao bằng đúng bán kính R thì lực hấp dẫn sẽ bằng bao nhiêu?", options: ["F", "1/2F", "1/3F", "1/4F"], answer: 3},
+      {q: "Định luật vạn vật hấp dẫn giúp ta:", options: ["Giải thích quỹ đạo hành tinh", "Phóng vệ tinh nhân tạo", "Hiểu hiện tượng thủy triều", "Tất cả đều đúng"], answer: 3},
+      {q: "Đại lượng nào sau đây không ảnh hưởng đến lực hấp dẫn giữa hai vật?", options: ["Khối lượng vật thứ nhất", "Khối lượng vật thứ hai", "Khoảng cách giữa hai vật", "Vận tốc chuyển động của hai vật"], answer: 3},
+      {q: "Một vật có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của Trái Đất là F, nếu đưa vật đó lên độ cao bằng đúng bán kính R thì lực hấp dẫn sẽ bằng bao nhiêu?", options: ["F", "1/2F", "1/3F", "1/4F"], answer: 3}
     ];
 
-    let remainingBalls = [], openedBalls = [], currentAnswer = -1;
+    let remainingBalls = [], openedBalls = [], currentAnswer = -1, currentQuestion = null;
 
     function initGame() {
       const container = document.getElementById("ballContainer");
@@ -177,6 +146,7 @@
       document.getElementById("questionBox").style.display = "block";
       document.getElementById("questionText").textContent = q.q;
       currentAnswer = q.answer;
+      currentQuestion = q;
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
       q.options.forEach((opt, i) => {
@@ -194,7 +164,7 @@
         document.getElementById("result").textContent = "✅ Chính xác!";
       } else {
         document.getElementById("result").textContent =
-          "❌ Sai. Đáp án đúng là: " + questions.find(q => q.answer === currentAnswer).options[currentAnswer];
+          "❌ Sai. Đáp án đúng là: " + currentQuestion.options[currentAnswer];
       }
     }
 
@@ -203,10 +173,18 @@
       alert("Game đã được reset!");
     }
 
-    // Khởi tạo lần đầu
     initGame();
   </script>
 </body>
 </html>
+```
 
+---
 
+👉 Với bản này:
+
+* Đáp án được đánh **từ 0** (0 = lựa chọn 1, 1 = lựa chọn 2, …).
+* Các câu hỏi vật lý bạn đưa đã được sửa chuẩn.
+* Không còn lỗi trùng thẻ HTML.
+
+Bạn có muốn mình thêm **hiển thị điểm số tổng kết** (bao nhiêu câu đúng / sai sau khi chơi hết) không?
