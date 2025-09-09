@@ -2,24 +2,23 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gacha Game</title>
+    <title>Gacha Quiz Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Gacha Game - 7 Câu Hỏi</h1>
+    <div class="game-container">
+        <h1>Gacha Quiz Game</h1>
         <div id="question-container">
-            <p id="question-text"></p>
-            <div id="options"></div>
+            <div id="question"></div>
+            <div id="answers"></div>
         </div>
+
         <div id="case-container">
-            <div id="case-items"></div>
-            <p id="reward-text"></p>
+            <div id="case-strip"></div>
         </div>
+
+        <div id="reward-container"></div>
     </div>
-    <audio id="tick-sound" src="sounds/tick.mp3"></audio>
-    <audio id="win-sound" src="sounds/win.mp3"></audio>
 
     <script src="script.js"></script>
 </body>
