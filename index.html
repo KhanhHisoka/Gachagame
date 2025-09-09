@@ -1,9 +1,8 @@
-```Tổ 4
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Gacha Quiz Machine - Trắc nghiệm</title>
+  <title>Gacha Quiz Machine - Trắc nghiệm có Âm thanh</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -13,7 +12,6 @@
       margin: 0;
       padding: 20px;
     }
-    h1 { margin-bottom: 10px; }
     .balls {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -60,7 +58,7 @@
       display: block;
       margin: 8px auto;
       padding: 8px 15px;
-      width: 250px;
+      width: 200px;
       border-radius: 8px;
       background: #1e90ff;
       color: white;
@@ -71,7 +69,7 @@
 </head>
 <body>
   <h1>🎰 Gacha Quiz Machine (Trắc nghiệm)</h1>
-  <p>7 quả cầu = 7 câu hỏi Vật lý. Chọn 1 trong 4 đáp án!</p>
+  <p>10 quả cầu = 10 câu hỏi. Có nhạc nền & hiệu ứng âm thanh!</p>
 
   <div class="balls" id="ballContainer"></div>
 
@@ -85,18 +83,26 @@
     <p id="result"></p>
   </div>
 
+  <!-- 🎵 Nhạc nền + hiệu ứng âm thanh -->
+  <audio id="bgMusic" loop autoplay>
+    <source src="https://www.bensound.com/bensound-music/bensound-funkyelement.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="correctSound">
+    <source src="https://www.soundjay.com/buttons/sounds/button-09.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="wrongSound">
+    <source src="https://www.soundjay.com/buttons/sounds/button-10.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     let questions = [
-      {q: "Lực Hấp dẫn tồn tại giữa:", options: ["Trái Đất và quả táo", "Mặt Trăng và Trái Đất", "Hai học sinh trong lớp", "Tất cả trường hợp trên"], answer: 3},
-      {q: "Trọng lực là gì?", options: ["Lực ép của vật lên mặt đất", "Lực hút Trái Đất tác dụng lên vật", "Lực hút giữa Trái Đất và Mặt Trăng", "Lực hút của mọi vật tác dụng lên Trái Đất"], answer: 1},
-      {q: "Nếu khối lượng một vật tăng gấp đôi thì lực hấp dẫn giữa nó và Trái Đất", options: ["Không đổi", "Tăng 2 lần", "Giảm 2 lần", "Tăng 4 lần"], answer: 1},
-      {q: "Nếu khoảng cách giữa hai vật tăng gấp 3, thì lực hấp dẫn:", options: ["Giảm 3 lần", "Không giảm", "Giảm 6 lần", "Giảm 9 lần"], answer: 3},
-      {q: "Định luật vạn vật hấp dẫn giúp ta:", options: ["Giải thích quỹ đạo hành tinh", "Phóng vệ tinh nhân tạo", "Hiểu hiện tượng thủy triều", "Tất cả đều đúng"], answer: 3},
-      {q: "Đại lượng nào sau đây không ảnh hưởng đến lực hấp dẫn giữa hai vật?", options: ["Khối lượng vật thứ nhất", "Khối lượng vật thứ hai", "Khoảng cách giữa hai vật", "Vận tốc chuyển động của hai vật"], answer: 3},
-      {q: "Một vật có khối lượng m đặt trên mặt đất chịu tác dụng lực hút của Trái Đất là F, nếu đưa vật đó lên độ cao bằng đúng bán kính R thì lực hấp dẫn sẽ bằng bao nhiêu?", options: ["F", "1/2F", "1/3F", "1/4F"], answer: 3}
+      {q: "Lực Hấp dẫn tồn tại giữa:", options: ["Trái Đất và quả táo", "Mặt Trăng và Trái Đất", "Hai học sinh trong lớp", "Tất cả trường hợp trên"], answer: 4},
+      {q: "Trọng lực là gì?", options: ["Lực ép của vật lên mặt đất", "Lực hút Trái Đất tác dụng lên vật", "Lực hút giữa Trái Đất và Mặt Trăng", "Lực hút của mọi vật tác dụng lên Trái Đất"], answer: 2},
+      {q: "Nếu khối lượng một vật tăng gấp đôi thì lực hấp dẫn giữa nó và Trái Đất", options: ["Không đổi", "Tăng 2 lần", "Giảm 2 lần", "Tăng 4 lần"], answer: 2},
+      {q: "Nếu khoảng cách giữa hai vật tăng gấp 3, thì lực hấp dẫn:", options: ["Giảm 3 lần", "Không giảm", "Giảm 6 lần", "Giảm 9 lần"], answer: 4},
     ];
 
-    let remainingBalls = [], openedBalls = [], currentAnswer = -1, currentQuestion = null;
+    let remainingBalls = [], openedBalls = [], currentAnswer = -1;
 
     function initGame() {
       const container = document.getElementById("ballContainer");
@@ -133,7 +139,6 @@
       document.getElementById("questionBox").style.display = "block";
       document.getElementById("questionText").textContent = q.q;
       currentAnswer = q.answer;
-      currentQuestion = q;
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
       q.options.forEach((opt, i) => {
@@ -147,11 +152,13 @@
     }
 
     function checkAnswer(choice) {
-      if (choice === currentAnswer) {
+      if (choice + 1 === currentAnswer) {
         document.getElementById("result").textContent = "✅ Chính xác!";
+        document.getElementById("correctSound").play();
       } else {
         document.getElementById("result").textContent =
-          "❌ Sai. Đáp án đúng là: " + currentQuestion.options[currentAnswer];
+          "❌ Sai. Đáp án đúng là: " + questions.find(q => q.answer === currentAnswer).options[currentAnswer - 1];
+        document.getElementById("wrongSound").play();
       }
     }
 
@@ -160,11 +167,8 @@
       alert("Game đã được reset!");
     }
 
+    // Khởi tạo lần đầu
     initGame();
   </script>
 </body>
 </html>
-```
-
----
-
