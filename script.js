@@ -28,16 +28,16 @@ const rewardsList = [
     {name: "Vương Miện Rem", img: "rewards/crown.png", rarity: "Legend", color: "#ff0"}
 ];
 
+
 // =======================
 // BLOCK 3️⃣: Hàm chọn phần thưởng theo độ hiếm
 // =======================
 function pickReward(difficultyLevel) {
     let rarityChances = {Common: 0.6, Rare: 0.25, Epic: 0.12, Legend: 0.03};
 
-    if(difficultyLevel >= 7){  // câu cuối luôn Legend
-        rarityChances.Rare += 0.1;
-        rarityChances.Epic += 0.05;
-        rarityChances.Legend = 1;
+    // Câu cuối luôn trúng Legend
+    if(difficultyLevel >= 7){
+        rarityChances = {Common:0, Rare:0, Epic:0, Legend:1};
     }
 
     let rand = Math.random();
@@ -61,6 +61,11 @@ function pickReward(difficultyLevel) {
 // =======================
 function showCaseAnimation(difficultyLevel){
     const caseStrip = document.getElementById("case-strip");
+    if(!caseStrip){
+        console.warn("⚠️ Thiếu phần tử HTML với id 'case-strip'");
+        return;
+    }
+
     caseStrip.innerHTML = "";
     const totalRewards = 20;
 
@@ -80,10 +85,12 @@ function showCaseAnimation(difficultyLevel){
     setTimeout(() => {
         caseStrip.style.transition = "none";
         caseStrip.style.left = "calc(50% - 60px)";
-        const win = new Audio("sounds/win.mp3");
-        win.play();
-        alert("Bạn nhận được phần thưởng!"); // thay thế bằng fireworks nếu muốn
-    }, 5000);
-}
 
+        // Phát âm thanh chiến thắng
+        const win = new Audio("sounds/win.mp3");
+        win.play().catch(()=>console.warn("⚠️ Không tìm thấy sounds/win.mp3"));
+
+        // Thông báo
+        alert("Bạn nhận được phần thưởng!");
+    }, 5000);
 }
